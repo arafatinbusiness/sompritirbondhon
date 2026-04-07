@@ -36,3 +36,24 @@ export interface FundInfo {
   description: string;
   year: number;
 }
+
+export type ExpenseCategory = 'vehicle' | 'program' | 'food' | 'transport' | 'office' | 'utilities' | 'other';
+
+export interface Expense {
+  id: string;
+  title: string;
+  description: string;
+  amount: number;
+  category: ExpenseCategory;
+  date: string;
+  createdBy: string;
+  createdByName: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ExpenseSummary {
+  totalExpenses: number;
+  byCategory: Record<ExpenseCategory, number>;
+  monthlyTrend: Array<{ month: string; year: number; total: number }>;
+}

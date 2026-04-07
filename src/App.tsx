@@ -7,15 +7,16 @@ import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
 import { AdminPanel } from './components/AdminPanel';
 import { LandingPage } from './components/LandingPage';
-import { User, Funding, Log, FundInfo } from './types';
-import { Loader2, AlertCircle, ShieldCheck, LayoutDashboard } from 'lucide-react';
+import { ExpenseDashboard } from './components/ExpenseDashboard';
+import { User, Funding, Log, FundInfo, Expense } from './types';
+import { Loader2, AlertCircle, ShieldCheck, LayoutDashboard, DollarSign } from 'lucide-react';
 
 // Error Boundary Component
 const App: React.FC = () => {
   const [user, setUser] = useState<FirebaseUser | null>(null);
   const [isAuthReady, setIsAuthReady] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [view, setView] = useState<'dashboard' | 'admin'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'admin' | 'expenses'>('dashboard');
   const [showLanding, setShowLanding] = useState(true);
 
   const [users, setUsers] = useState<User[]>([]);
@@ -130,8 +131,8 @@ const App: React.FC = () => {
     );
   }
 
-  // Show landing page first if user is not logged in
-  if (showLanding && !user) {
+  // Show landing page first if user is not logged in and not viewing expenses
+  if (showLanding && !user && view !== 'expenses') {
     return <LandingPage onLogin={() => setShowLanding(false)} />;
   }
 
@@ -152,7 +153,11 @@ const App: React.FC = () => {
             users={users} 
             fundName={fundInfo?.name || ''} 
             isAdmin={isAdmin}
+            onNavigateToExpenses={() => setView('expenses')}
           />
+        ) : view === 'expenses' ? (
+          // Expense dashboard is public - anyone can view it
+          <ExpenseDashboard />
         ) : (
           // Only show AdminPanel if user is logged in and is admin
           isAdmin ? (

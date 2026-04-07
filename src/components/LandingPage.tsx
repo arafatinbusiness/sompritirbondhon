@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'motion/react';
-import { ChevronRight, ShieldCheck, Users, Wallet, Info, ArrowRight, Beef, Star, Quote } from 'lucide-react';
+import { ChevronRight, ShieldCheck, Users, Wallet, Info, ArrowRight, Beef, Star, Quote, DollarSign } from 'lucide-react';
 
 interface LandingPageProps {
   onLogin: () => void;

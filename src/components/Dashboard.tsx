@@ -12,6 +12,7 @@ interface DashboardProps {
   fundings: Funding[];
   users: User[];
   fundName: string;
+  onNavigateToExpenses?: () => void;
 }
 
 const MONTHS_BN = [
@@ -19,7 +20,7 @@ const MONTHS_BN = [
   'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
 ];
 
-export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName, onNavigateToExpenses }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
@@ -29,7 +30,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
   // Get available years
   const years = useMemo(() => {
     const yrs = new Set(fundings.map(f => f.year.toString()));
-    return (Array.from(yrs) as string[]).sort((a, b) => b.localeCompare(a));
+    return Array.from(yrs).sort((a, b) => b.localeCompare(a));
   }, [fundings]);
 
   // State for logs and pagination
@@ -440,13 +441,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
           <p className="text-slate-600 text-sm">
             মোট সংগ্রহ: <span className="font-bold text-emerald-600">{totalAmount.toLocaleString('bn-BD')} ৳</span>
           </p>
-          <button
-            onClick={exportToExcel}
-            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors"
-          >
-            <Download size={16} />
-            ডাউনলোড
-          </button>
+          <div className="flex items-center gap-2">
+            {onNavigateToExpenses && (
+              <button
+                onClick={onNavigateToExpenses}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
+              >
+                <Download size={16} />
+                খরচ ড্যাশবোর্ড
+              </button>
+            )}
+            <button
+              onClick={exportToExcel}
+              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors"
+            >
+              <Download size={16} />
+              ডাউনলোড
+            </button>
+          </div>
         </div>
       </div>
 

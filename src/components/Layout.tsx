@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, LayoutDashboard, ShieldCheck, User as UserIcon, X } from 'lucide-react';
+import { LogOut, LayoutDashboard, ShieldCheck, User as UserIcon, X, DollarSign } from 'lucide-react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
 import { Auth } from './Auth';
@@ -8,8 +8,8 @@ interface LayoutProps {
   children: React.ReactNode;
   user: any;
   isAdmin: boolean;
-  currentView?: 'dashboard' | 'admin';
-  onViewChange?: (view: 'dashboard' | 'admin') => void;
+  currentView?: 'dashboard' | 'admin' | 'expenses';
+  onViewChange?: (view: 'dashboard' | 'admin' | 'expenses') => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ 
@@ -96,8 +96,8 @@ export const Layout: React.FC<LayoutProps> = ({
         {children}
       </main>
 
-      {/* Mobile Bottom Navigation */}
-      {user && isAdmin && (
+      {/* Mobile Bottom Navigation - Show to all users */}
+      {user && (
         <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-around z-40 safe-bottom shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
           <button
             onClick={() => onViewChange?.('dashboard')}
@@ -107,17 +107,26 @@ export const Layout: React.FC<LayoutProps> = ({
             <span>ড্যাশবোর্ড</span>
           </button>
           <button
-            onClick={() => onViewChange?.('admin')}
-            className={`mobile-nav-item ${currentView === 'admin' ? 'text-emerald-600' : 'text-slate-400'}`}
+            onClick={() => onViewChange?.('expenses')}
+            className={`mobile-nav-item ${currentView === 'expenses' ? 'text-emerald-600' : 'text-slate-400'}`}
           >
-            <ShieldCheck size={24} className={currentView === 'admin' ? 'fill-emerald-50' : ''} />
-            <span>অ্যাডমিন</span>
+            <DollarSign size={24} className={currentView === 'expenses' ? 'fill-emerald-50' : ''} />
+            <span>খরচ</span>
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => onViewChange?.('admin')}
+              className={`mobile-nav-item ${currentView === 'admin' ? 'text-emerald-600' : 'text-slate-400'}`}
+            >
+              <ShieldCheck size={24} className={currentView === 'admin' ? 'fill-emerald-50' : ''} />
+              <span>অ্যাডমিন</span>
+            </button>
+          )}
         </nav>
       )}
 
-      {/* Desktop View Toggle (Visible only on desktop for admins) */}
-      {user && isAdmin && (
+      {/* Desktop View Toggle - Show to all users */}
+      {user && (
         <div className="hidden sm:flex fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-2xl z-40">
           <button
             onClick={() => onViewChange?.('dashboard')}
@@ -129,14 +138,25 @@ export const Layout: React.FC<LayoutProps> = ({
             ড্যাশবোর্ড
           </button>
           <button
-            onClick={() => onViewChange?.('admin')}
+            onClick={() => onViewChange?.('expenses')}
             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-              currentView === 'admin' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
+              currentView === 'expenses' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
             }`}
           >
-            <ShieldCheck size={18} />
-            অ্যাডমিন প্যানেল
+            <DollarSign size={18} />
+            খরচ
           </button>
+          {isAdmin && (
+            <button
+              onClick={() => onViewChange?.('admin')}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
+                currentView === 'admin' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              <ShieldCheck size={18} />
+              অ্যাডমিন প্যানেল
+            </button>
+          )}
         </div>
       )}
 

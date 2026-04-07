@@ -51,6 +51,27 @@
         "year": { "type": "number" }
       },
       "required": ["name", "year"]
+    },
+    "Expense": {
+      "title": "Expense",
+      "description": "Expense records for various categories",
+      "type": "object",
+      "properties": {
+        "title": { "type": "string", "description": "Title of the expense" },
+        "description": { "type": "string", "description": "Detailed description of the expense" },
+        "amount": { "type": "number", "description": "Amount spent" },
+        "category": { 
+          "type": "string", 
+          "enum": ["vehicle", "program", "food", "transport", "office", "utilities", "other"],
+          "description": "Category of the expense"
+        },
+        "date": { "type": "string", "format": "date-time", "description": "Date when expense occurred" },
+        "createdBy": { "type": "string", "description": "User ID who created the expense" },
+        "createdByName": { "type": "string", "description": "Name of user who created the expense" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "When expense was recorded" },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "When expense was last updated" }
+      },
+      "required": ["title", "amount", "category", "date", "createdBy", "createdByName"]
     }
   },
   "firestore": {
@@ -69,6 +90,10 @@
     "fund_info": {
       "schema": "FundInfo",
       "description": "Information about the fund"
+    },
+    "expenses": {
+      "schema": "Expense",
+      "description": "Collection of expense records"
     }
   }
 }
