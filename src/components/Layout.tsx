@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { LogOut, LayoutDashboard, ShieldCheck, User as UserIcon, X, DollarSign } from 'lucide-react';
 import { auth } from '../firebase';
 import { signOut } from 'firebase/auth';
@@ -9,17 +10,25 @@ interface LayoutProps {
   user: any;
   isAdmin: boolean;
   currentView?: 'dashboard' | 'admin' | 'expenses';
-  onViewChange?: (view: 'dashboard' | 'admin' | 'expenses') => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ 
   children, 
   user, 
   isAdmin, 
-  currentView, 
-  onViewChange 
+  currentView 
 }) => {
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(false);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      navigate('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -41,17 +50,19 @@ export const Layout: React.FC<LayoutProps> = ({
       <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200 sticky top-0 z-30">
         <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-emerald-200 rotate-3">
-              ত
-            </div>
-            <div>
-              <h1 className="text-base font-black text-slate-900 leading-tight tracking-tight">
-                তহবিল ব্যবস্থাপনা
-              </h1>
-              <p className="text-[9px] text-slate-400 uppercase tracking-[0.2em] font-black">
-                FUND MANAGER PRO
-              </p>
-            </div>
+            <Link to="/dashboard" className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-emerald-600 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-emerald-200 rotate-3">
+                ত
+              </div>
+              <div>
+                <h1 className="text-base font-black text-slate-900 leading-tight tracking-tight">
+                  তহবিল ব্যবস্থাপনা
+                </h1>
+                <p className="text-[9px] text-slate-400 uppercase tracking-[0.2em] font-black">
+                  FUND MANAGER PRO
+                </p>
+              </div>
+            </Link>
           </div>
 
           <div className="flex items-center gap-3">
@@ -69,7 +80,7 @@ export const Layout: React.FC<LayoutProps> = ({
                   )}
                 </div>
                 <button
-                  onClick={() => signOut(auth)}
+                  onClick={handleLogout}
                   className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all active:scale-95"
                   title="লগ আউট"
                 >
@@ -90,8 +101,43 @@ export const Layout: React.FC<LayoutProps> = ({
         </div>
       </header>
 
-      {/* Desktop Sidebar / Nav (Optional, but keeping it simple for now) */}
-      
+      {/* Desktop Navigation */}
+      {user && (
+        <div className="hidden sm:flex max-w-7xl mx-auto px-4 py-4">
+          <div className="flex items-center gap-2 bg-white/80 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+            <Link
+              to="/dashboard"
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
+                currentView === 'dashboard' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              <LayoutDashboard size={18} />
+              ড্যাশবোর্ড
+            </Link>
+            <Link
+              to="/expenses"
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
+                currentView === 'expenses' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
+              }`}
+            >
+              <DollarSign size={18} />
+              খরচ
+            </Link>
+            {isAdmin && (
+              <Link
+                to="/admin"
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
+                  currentView === 'admin' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
+                }`}
+              >
+                <ShieldCheck size={18} />
+                অ্যাডমিন প্যানেল
+              </Link>
+            )}
+          </div>
+        </div>
+      )}
+
       <main className="flex-1 max-w-7xl mx-auto px-4 py-6 w-full">
         {children}
       </main>
@@ -99,65 +145,30 @@ export const Layout: React.FC<LayoutProps> = ({
       {/* Mobile Bottom Navigation - Show to all users */}
       {user && (
         <nav className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 px-6 py-3 flex items-center justify-around z-40 safe-bottom shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
-          <button
-            onClick={() => onViewChange?.('dashboard')}
-            className={`mobile-nav-item ${currentView === 'dashboard' ? 'text-emerald-600' : 'text-slate-400'}`}
+          <Link
+            to="/dashboard"
+            className={`mobile-nav-item flex flex-col items-center ${currentView === 'dashboard' ? 'text-emerald-600' : 'text-slate-400'}`}
           >
             <LayoutDashboard size={24} className={currentView === 'dashboard' ? 'fill-emerald-50' : ''} />
-            <span>ড্যাশবোর্ড</span>
-          </button>
-          <button
-            onClick={() => onViewChange?.('expenses')}
-            className={`mobile-nav-item ${currentView === 'expenses' ? 'text-emerald-600' : 'text-slate-400'}`}
+            <span className="text-xs mt-1">ড্যাশবোর্ড</span>
+          </Link>
+          <Link
+            to="/expenses"
+            className={`mobile-nav-item flex flex-col items-center ${currentView === 'expenses' ? 'text-emerald-600' : 'text-slate-400'}`}
           >
             <DollarSign size={24} className={currentView === 'expenses' ? 'fill-emerald-50' : ''} />
-            <span>খরচ</span>
-          </button>
+            <span className="text-xs mt-1">খরচ</span>
+          </Link>
           {isAdmin && (
-            <button
-              onClick={() => onViewChange?.('admin')}
-              className={`mobile-nav-item ${currentView === 'admin' ? 'text-emerald-600' : 'text-slate-400'}`}
+            <Link
+              to="/admin"
+              className={`mobile-nav-item flex flex-col items-center ${currentView === 'admin' ? 'text-emerald-600' : 'text-slate-400'}`}
             >
               <ShieldCheck size={24} className={currentView === 'admin' ? 'fill-emerald-50' : ''} />
-              <span>অ্যাডমিন</span>
-            </button>
+              <span className="text-xs mt-1">অ্যাডমিন</span>
+            </Link>
           )}
         </nav>
-      )}
-
-      {/* Desktop View Toggle - Show to all users */}
-      {user && (
-        <div className="hidden sm:flex fixed bottom-8 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200 shadow-2xl z-40">
-          <button
-            onClick={() => onViewChange?.('dashboard')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-              currentView === 'dashboard' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            <LayoutDashboard size={18} />
-            ড্যাশবোর্ড
-          </button>
-          <button
-            onClick={() => onViewChange?.('expenses')}
-            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-              currentView === 'expenses' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
-            }`}
-          >
-            <DollarSign size={18} />
-            খরচ
-          </button>
-          {isAdmin && (
-            <button
-              onClick={() => onViewChange?.('admin')}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold transition-all ${
-                currentView === 'admin' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-200' : 'text-slate-500 hover:bg-slate-50'
-              }`}
-            >
-              <ShieldCheck size={18} />
-              অ্যাডমিন প্যানেল
-            </button>
-          )}
-        </div>
       )}
 
       <footer className="hidden sm:block bg-white border-t border-slate-200 py-8 mt-auto">

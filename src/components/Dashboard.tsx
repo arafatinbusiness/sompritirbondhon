@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { Download, Search, Calendar, User as UserIcon, ChevronRight, X, History, Clock, ChevronLeft, ChevronRight as ChevronRightIcon, Phone, MessageCircle, ArrowLeft } from 'lucide-react';
 import { Funding, User, Log } from '../types';
 import * as XLSX from 'xlsx';
@@ -12,7 +13,6 @@ interface DashboardProps {
   fundings: Funding[];
   users: User[];
   fundName: string;
-  onNavigateToExpenses?: () => void;
 }
 
 const MONTHS_BN = [
@@ -20,7 +20,7 @@ const MONTHS_BN = [
   'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
 ];
 
-export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName, onNavigateToExpenses }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedYear, setSelectedYear] = useState('');
@@ -441,24 +441,22 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName,
           <p className="text-slate-600 text-sm">
             মোট সংগ্রহ: <span className="font-bold text-emerald-600">{totalAmount.toLocaleString('bn-BD')} ৳</span>
           </p>
-          <div className="flex items-center gap-2">
-            {onNavigateToExpenses && (
-              <button
-                onClick={onNavigateToExpenses}
-                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
-              >
-                <Download size={16} />
-                খরচ ড্যাশবোর্ড
-              </button>
-            )}
-            <button
-              onClick={exportToExcel}
-              className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors"
-            >
-              <Download size={16} />
-              ডাউনলোড
-            </button>
-          </div>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/expenses"
+            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-blue-700 transition-colors"
+          >
+            <Download size={16} />
+            খরচ ড্যাশবোর্ড
+          </Link>
+          <button
+            onClick={exportToExcel}
+            className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-700 transition-colors"
+          >
+            <Download size={16} />
+            ডাউনলোড
+          </button>
+        </div>
         </div>
       </div>
 
