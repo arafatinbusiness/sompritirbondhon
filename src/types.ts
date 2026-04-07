@@ -37,14 +37,12 @@ export interface FundInfo {
   year: number;
 }
 
-export type ExpenseCategory = 'vehicle' | 'program' | 'food' | 'transport' | 'office' | 'utilities' | 'other';
-
 export interface Expense {
   id: string;
   title: string;
   description: string;
   amount: number;
-  category: ExpenseCategory;
+  category: string; // Dynamic category - admin can enter any text
   date: string;
   createdBy: string;
   createdByName: string;
@@ -54,6 +52,6 @@ export interface Expense {
 
 export interface ExpenseSummary {
   totalExpenses: number;
-  byCategory: Record<ExpenseCategory, number>;
+  byCategory: Record<string, number>; // Dynamic categories
   monthlyTrend: Array<{ month: string; year: number; total: number }>;
 }

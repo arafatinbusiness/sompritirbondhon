@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { db, auth } from '../firebase';
-import { ExpenseCategory } from '../types';
 import { PlusCircle, X, Check, AlertCircle } from 'lucide-react';
 
 interface ExpenseFormProps {
@@ -9,21 +8,11 @@ interface ExpenseFormProps {
   onCancel?: () => void;
 }
 
-const categoryOptions: { value: ExpenseCategory; label: string }[] = [
-  { value: 'vehicle', label: 'গাড়ি/যানবাহন' },
-  { value: 'program', label: 'প্রোগ্রাম/অনুষ্ঠান' },
-  { value: 'food', label: 'খাবার/খাদ্য' },
-  { value: 'transport', label: 'পরিবহন' },
-  { value: 'office', label: 'অফিস খরচ' },
-  { value: 'utilities', label: 'ইউটিলিটি বিল' },
-  { value: 'other', label: 'অন্যান্য' }
-];
-
 export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
-  const [category, setCategory] = useState<ExpenseCategory>('other');
+  const [category, setCategory] = useState('');
   const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +23,11 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel })
     
     if (!title.trim()) {
       setError('খরচের শিরোনাম প্রয়োজন');
+      return;
+    }
+    
+    if (!category.trim()) {
+      setError('খরচের ক্যাটাগরি/কারণ লিখুন');
       return;
     }
     
@@ -61,7 +55,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel })
         title: title.trim(),
         description: description.trim(),
         amount: parseFloat(amount),
-        category,
+        category: category.trim(),
         date: new Date(date).toISOString(),
         createdBy: user.uid,
         createdByName: user.displayName || user.email?.split('@')[0] || 'Admin',
@@ -90,7 +84,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel })
     setTitle('');
     setDescription('');
     setAmount('');
-    setCategory('other');
+    setCategory('');
     setDate(new Date().toISOString().split('T')[0]);
     setError(null);
   };
@@ -195,19 +189,16 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel })
           {/* Category */}
           <div className="space-y-2">
             <label className="block text-sm font-medium text-slate-700">
-              ক্যাটাগরি *
+              খরচের কারণ/ক্যাটাগরি *
             </label>
-            <select
+            <input
+              type="text"
               value={category}
-              onChange={(e) => setCategory(e.target.value as ExpenseCategory)}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="যেমন: গাড়ি মেরামত, প্রোগ্রাম খরচ, অফিস ভাড়া, ইত্যাদি"
               className="w-full px-4 py-3 bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-            >
-              {categoryOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+              required
+            />
           </div>
           
           {/* Date */}
@@ -275,7 +266,7 @@ export const ExpenseForm: React.FC<ExpenseFormProps> = ({ onSuccess, onCancel })
         <h4 className="font-medium text-slate-800 mb-2">নির্দেশনা:</h4>
         <ul className="text-slate-600 text-sm space-y-1 list-disc pl-4">
           <li>খরচের শিরোনাম সংক্ষিপ্ত এবং স্পষ্ট রাখুন</li>
-          <li>সঠিক ক্যাটাগরি নির্বাচন করুন যাতে রিপোর্টিং সহজ হয়</li>
+          <li>খরচের কারণ/ক্যাটাগরি স্পষ্টভাবে লিখুন যাতে সবাই বুঝতে পারে টাকা কোথায় খরচ হয়েছে</li>
           <li>খরচের তারিখ সঠিকভাবে নির্বাচন করুন</li>
           <li>বিস্তারিত বিবরণে প্রাসঙ্গিক তথ্য যোগ করুন</li>
         </ul>

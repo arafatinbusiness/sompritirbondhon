@@ -1,29 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import { collection, query, orderBy, limit, startAfter, getDocs, DocumentSnapshot } from 'firebase/firestore';
 import { db } from '../firebase';
-import { Expense, ExpenseCategory } from '../types';
+import { Expense } from '../types';
 import { TrendingUp, TrendingDown, DollarSign, Calendar, Filter, ChevronLeft, ChevronRight, PieChart, BarChart3, Download } from 'lucide-react';
 
 const ITEMS_PER_PAGE = 10;
 
-const categoryLabels: Record<ExpenseCategory, string> = {
-  vehicle: 'গাড়ি/যানবাহন',
-  program: 'প্রোগ্রাম/অনুষ্ঠান',
-  food: 'খাবার/খাদ্য',
-  transport: 'পরিবহন',
-  office: 'অফিস খরচ',
-  utilities: 'ইউটিলিটি বিল',
-  other: 'অন্যান্য'
-};
-
-const categoryColors: Record<ExpenseCategory, string> = {
-  vehicle: 'bg-blue-100 text-blue-800',
-  program: 'bg-purple-100 text-purple-800',
-  food: 'bg-green-100 text-green-800',
-  transport: 'bg-yellow-100 text-yellow-800',
-  office: 'bg-red-100 text-red-800',
-  utilities: 'bg-indigo-100 text-indigo-800',
-  other: 'bg-gray-100 text-gray-800'
+// Function to generate a consistent color for a category string
+const getCategoryColor = (category: string): string => {
+  // Simple hash function to generate consistent colors
+  let hash = 0;
+  for (let i = 0; i < category.length; i++) {
+    hash = category.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  
+  const colors = [
+    'bg-blue-100 text-blue-800',
+    'bg-purple-100 text-purple-800',
+    'bg-green-100 text-green-800',
+    'bg-yellow-100 text-yellow-800',
+    'bg-red-100 text-red-800',
+    'bg-indigo-100 text-indigo-800',
+    'bg-pink-100 text-pink-800',
+    'bg-teal-100 text-teal-800',
+    'bg-orange-100 text-orange-800',
+    'bg-cyan-100 text-cyan-800'
+  ];
+  
+  return colors[Math.abs(hash) % colors.length];
 };
 
 export const ExpenseDashboard: React.FC = () => {
@@ -32,10 +36,10 @@ export const ExpenseDashboard: React.FC = () => {
   const [page, setPage] = useState(1);
   const [lastDoc, setLastDoc] = useState<DocumentSnapshot | null>(null);
   const [hasNextPage, setHasNextPage] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState<ExpenseCategory | 'all'>('all');
+  const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [summary, setSummary] = useState({
     totalExpenses: 0,
-    byCategory: {} as Record<ExpenseCategory, number>,
+    byCategory: {} as Record<string, number>,
     monthlyTrend: [] as Array<{ month: string; year: number; total: number }>
   });
 
@@ -88,7 +92,7 @@ export const ExpenseDashboard: React.FC = () => {
   const calculateSummary = (expensesData: Expense[]) => {
     const total = expensesData.reduce((sum, expense) => sum + expense.amount, 0);
     
-    const byCategory = {} as Record<ExpenseCategory, number>;
+    const byCategory: Record<string, number> = {};
     expensesData.forEach(expense => {
       byCategory[expense.category] = (byCategory[expense.category] || 0) + expense.amount;
     });
@@ -165,6 +169,9 @@ export const ExpenseDashboard: React.FC = () => {
     ? expenses 
     : expenses.filter(expense => expense.category === selectedCategory);
 
+  // Get unique categories from expenses
+  const uniqueCategories = Array.from(new Set(expenses.map(expense => expense.category))).sort();
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -230,13 +237,13 @@ export const ExpenseDashboard: React.FC = () => {
           >
             সব ক্যাটাগরি
           </button>
-          {Object.entries(categoryLabels).map(([category, label]) => (
+          {uniqueCategories.map((category) => (
             <button
               key={category}
-              onClick={() => setSelectedCategory(category as ExpenseCategory)}
+              onClick={() => setSelectedCategory(category)}
               className={`px-4 py-2 rounded-xl font-medium transition-all ${selectedCategory === category ? 'bg-emerald-600 text-white' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'}`}
             >
-              {label}
+              {category}
             </button>
           ))}
         </div>
@@ -252,8 +259,8 @@ export const ExpenseDashboard: React.FC = () => {
               <div key={category} className="space-y-2">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <span className={`px-3 py-1 rounded-lg text-sm font-medium ${categoryColors[category as ExpenseCategory]}`}>
-                      {categoryLabels[category as ExpenseCategory]}
+                    <span className={`px-3 py-1 rounded-lg text-sm font-medium ${getCategoryColor(category)}`}>
+                      {category}
                     </span>
                     <span className="text-slate-700 font-medium">{formatCurrency(amount)}</span>
                   </div>
@@ -294,8 +301,8 @@ export const ExpenseDashboard: React.FC = () => {
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <span className={`px-3 py-1 rounded-lg text-sm font-medium ${categoryColors[expense.category]}`}>
-                          {categoryLabels[expense.category]}
+                        <span className={`px-3 py-1 rounded-lg text-sm font-medium ${getCategoryColor(expense.category)}`}>
+                          {expense.category}
                         </span>
                         <span className="text-slate-500 text-sm">
                           {formatDate(expense.date)}
