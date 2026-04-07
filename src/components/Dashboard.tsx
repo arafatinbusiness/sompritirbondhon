@@ -30,7 +30,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
   // Get available years
   const years = useMemo(() => {
     const yrs = new Set(fundings.map(f => f.year.toString()));
-    return Array.from(yrs).sort((a, b) => b.localeCompare(a));
+    return Array.from(yrs).sort((a: string, b: string) => b.localeCompare(a));
   }, [fundings]);
 
   // State for logs and pagination
@@ -151,7 +151,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
         contribution = contributions.reduce((sum, f) => sum + f.amount, 0);
         monthYear = selectedMonth;
         // Show years when this member contributed for this month
-        const years = [...new Set(contributions.map(f => f.year.toString()))].sort((a, b) => b.localeCompare(a));
+        const years = [...new Set(contributions.map(f => f.year.toString()))].sort((a: string, b: string) => b.localeCompare(a));
         displayText = years.length > 0 
           ? `${selectedMonth} (${years.join(', ')})`
           : `${selectedMonth}`;
@@ -169,7 +169,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
         contribution = contributions.reduce((sum, f) => sum + f.amount, 0);
         monthYear = 'সকল মাস';
         // Show total years of contribution
-        const years = [...new Set(contributions.map(f => f.year.toString()))].sort((a, b) => b.localeCompare(a));
+        const years = [...new Set(contributions.map(f => f.year.toString()))].sort((a: string, b: string) => b.localeCompare(a));
         displayText = years.length > 0 
           ? `সকল মাস (${years.join(', ')})`
           : 'সকল মাস';
@@ -217,7 +217,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
         month,
         contributions: monthContributions,
         total,
-        years: [...new Set(monthContributions.map(f => f.year.toString()))].sort((a, b) => b.localeCompare(a))
+        years: [...new Set(monthContributions.map(f => f.year.toString()))].sort((a: string, b: string) => b.localeCompare(a))
       };
     });
     
@@ -279,7 +279,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ fundings, users, fundName 
     });
     
     // Add grand total and summary
-    summaryRow.push(grandTotal);
+    summaryRow.push(grandTotal.toString());
     summaryRow.push(`মোট সংগ্রহ: ${grandTotal.toLocaleString('bn-BD')} ৳`);
 
     // Combine all rows

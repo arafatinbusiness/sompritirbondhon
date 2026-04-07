@@ -254,7 +254,8 @@ export const ExpenseDashboard: React.FC = () => {
         <h3 className="text-lg font-bold text-slate-900 mb-6">ক্যাটাগরি অনুযায়ী খরচ</h3>
         <div className="space-y-4">
           {Object.entries(summary.byCategory).map(([category, amount]) => {
-            const percentage = summary.totalExpenses > 0 ? (amount / summary.totalExpenses) * 100 : 0;
+            const amountNum = amount as number;
+            const percentage = summary.totalExpenses > 0 ? (amountNum / summary.totalExpenses) * 100 : 0;
             return (
               <div key={category} className="space-y-2">
                 <div className="flex justify-between items-center">
@@ -262,7 +263,7 @@ export const ExpenseDashboard: React.FC = () => {
                     <span className={`px-3 py-1 rounded-lg text-sm font-medium ${getCategoryColor(category)}`}>
                       {category}
                     </span>
-                    <span className="text-slate-700 font-medium">{formatCurrency(amount)}</span>
+                    <span className="text-slate-700 font-medium">{formatCurrency(amountNum)}</span>
                   </div>
                   <span className="text-slate-600 font-medium">{percentage.toFixed(1)}%</span>
                 </div>
