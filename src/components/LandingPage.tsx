@@ -38,8 +38,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
             transition={{ delay: 0.2, duration: 0.8 }}
             className="text-6xl sm:text-8xl font-black leading-[0.9] tracking-tighter uppercase"
           >
-            সেরা মাংসের <br />
-            <span className="text-emerald-500 italic font-serif normal-case tracking-normal">উৎসব</span>
+            sompritir <br />
+            <span className="text-emerald-500 italic font-serif normal-case tracking-normal">bondhon</span>
           </motion.h1>
 
           <motion.div
@@ -110,7 +110,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 <span className="text-emerald-500">বিশেষ উদ্যোগ?</span>
               </h2>
               <p className="text-slate-400 text-lg leading-relaxed">
-                আমরা বিশ্বাস করি উৎসবের আনন্দ সবার সাথে ভাগ করে নেওয়ায়। প্রতি মাসে সামান্য সঞ্চয় আমাদের পৌঁছে দেবে বছরের সেরা মাংসের স্বাদে।
+                আমরা বিশ্বাস করি উৎসবের আনন্দ সবার সাথে ভাগ করে নেওয়ায়। প্রতি মাসে সামান্য সঞ্চয় আমাদের পৌঁছে দেবে বছরের সেরা উদ্যোগের স্বাদে।
               </p>
             </div>
 
