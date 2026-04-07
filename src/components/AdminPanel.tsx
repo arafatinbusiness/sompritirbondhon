@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { UserPlus, DollarSign, Settings, Save, X, Plus, Trash2, Users, ChevronRight, Info, History, Clock } from 'lucide-react';
+import { UserPlus, DollarSign, Settings, Save, X, Plus, Trash2, Users, ChevronRight, Info, History, Clock, Receipt } from 'lucide-react';
 import { db } from '../firebase';
 import { collection, addDoc, updateDoc, doc, deleteDoc, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 import { User, Funding, FundInfo, Log } from '../types';
 import { motion, AnimatePresence } from 'motion/react';
+import { ExpenseForm } from './ExpenseForm';
 
 interface AdminPanelProps {
   users: User[];
@@ -18,7 +19,7 @@ const MONTHS_BN = [
 ];
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ users, fundings, fundInfo, currentAdmin }) => {
-  const [activeTab, setActiveTab] = useState<'funding' | 'users' | 'info'>('funding');
+  const [activeTab, setActiveTab] = useState<'funding' | 'users' | 'info' | 'expenses'>('funding');
   
   // Funding State
   const [selectedUserId, setSelectedUserId] = useState('');
@@ -313,9 +314,41 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ users, fundings, fundInf
           <Settings size={16} />
           সেটিংস
         </button>
+        <button
+          onClick={() => setActiveTab('expenses')}
+          className={`flex-1 min-w-fit flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-xs font-black transition-all ${
+            activeTab === 'expenses' ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' : 'text-slate-500 hover:bg-slate-50'
+          }`}
+        >
+          <Receipt size={16} />
+          খরচ
+        </button>
       </div>
 
       <AnimatePresence mode="wait">
+        {activeTab === 'expenses' && (
+          <motion.div
+            key="expenses"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="space-y-6"
+          >
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 bg-orange-50 text-orange-600 rounded-lg flex items-center justify-center">
+                  <Receipt size={18} />
+                </div>
+                <h3 className="text-lg font-black text-slate-800">নতুন খরচ যোগ করুন</h3>
+              </div>
+              <ExpenseForm 
+                onSuccess={() => {
+                  alert('খরচ সফলভাবে যোগ করা হয়েছে!');
+                }}
+              />
+            </div>
+          </motion.div>
+        )}
         {activeTab === 'funding' && (
           <motion.div
             key="funding"
